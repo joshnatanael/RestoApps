@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn-icons-png.flaticon.com/512/3081/3081098.png" type="image/x-icon" rel="shortcut icon" />
+  <title>RestoApps</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link href="./css/style.css" rel="stylesheet" />
+</head>
+<body class="p-0 m-0 box-border">
+  <div id="app">
+    <!--preloader-->
+    <div v-if="loadStatus" id="preloader">
+      <div class="loading">
+        <lottie-player src="https://assets6.lottiefiles.com/packages/lf20_s5tFhoBEWg.json" background="transparent"
+          speed="1" style="width: 500px; height: 500px;" loop autoplay></lottie-player>
+      </div>
+    </div>
+    <!-- Navbar Section-->
+    <nav class="bg-black shadow-md sticky top-0 z-50">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+          <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+            <div class="flex flex-shrink-0 items-center">
+              <img class="block h-10 w-auto lg:hidden" src="./assets/img/logo.png" alt="RestoApps">
+              <img class="hidden h-10 w-auto lg:block" src="./assets/img/logo.png" alt="RestoApps">
+            </div>
+            <div v-if="isLoggedIn" class="hidden sm:ml-6 sm:block">
+              <div class="flex space-x-4">
+                <a @click="page = 'dashboard-page'"
+                  class="text-black-300 hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer text-white"
+                  aria-current="page">Dashboard</a>
+                <a @click="page = 'menu-page'"
+                  class="text-white hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer">Menu</a>
+                <a @click="page = 'category-page'"
+                  class="text-white hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer">Categories</a>
+                <a @click="page = 'logs-page'"
+                  class="text-white hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer">Logs</a>
+              </div>
+            </div>
+            <div v-else class="hidden sm:ml-6 sm:block">
+              <div class="flex space-x-4">
+                <a @click="page = 'register-page'"
+                  class="text-black-300 hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer text-white"
+                  aria-current="page">Sign Up</a>
+                <a @click="page = 'login-page'"
+                  class="text-white hover:bg-white hover:text-black px-3 py-2 rounded-md text-sm font-medium cursor-pointer">Log
+                  In</a>
+              </div>
+            </div>
+          </div>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <div class="relative ml-3">
+              <div>
+                <button type="button"
+                  class="flex rounded-full bg-white border-solid text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 border-black border-2"
+                  id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                  <img @click="profileBarScrolled? profileBarScrolled = false : profileBarScrolled = true;"
+                    class="h-8 w-8 rounded-full" src="https://cdn-icons-png.flaticon.com/512/3171/3171065.png"
+                    alt="Profile Picture">
+                </button>
+              </div>
+              <div v-if="profileBarScrolled"
+                class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Hi,
+                  {{user}}!</a>
+                <a @click="eventLogoutHandler" v-if="isLoggedIn"
+                  class="block px-4 py-2 text-sm text-gray-700 cursor-pointer" role="menuitem" tabindex="-1"
+                  id="user-menu-item-2">Log out</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Register Section-->
+    <section v-if="page === 'register-page'" class="register-section w-3/5 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="text-center font-medium text-3xl pb-7">Sign Up</h1>
+      <h2 class="text-center text-xl pb-6">Sign up to access all feature.</h2>
+      <hr class="mb-14">
+      <form @submit.prevent="eventRegisterHandler">
+        <div class="flex my-4">
+          <label for="register-username" class="inline-block w-2/6 font-bold my-auto">Username</label>
+          <input v-model="register.username" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="register-username"
+            name="username" placeholder="Enter your username here" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="register-email" class="inline-block w-2/6 font-bold my-auto">Email</label>
+          <input v-model="register.email" type="email"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="register-email" name="email"
+            placeholder="Enter your email here" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="register-password" class="inline-block w-2/6 font-bold my-auto">Password</label>
+          <input v-model="register.password" type="password"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="register-password"
+            name="password" placeholder="Enter your password here" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="register-phoneNumber" class="inline-block w-2/6 font-bold my-auto">Phone Number</label>
+          <input v-model="register.phoneNumber" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="register-phoneNumber"
+            name="phoneNumber" placeholder="Enter your phone number (optional)"><br>
+        </div>
+        <div class="my-3">
+          <label for="register-address" class="font-bold">Address</label><br>
+          <textarea v-model="register.address" id="register-address"
+            class="rounded-lg w-full my-2 p-2 border-2 border-grey-600 border-solid pl-3" name="address"
+            placeholder="Enter your address here (optional)"></textarea><br>
+        </div>
+        <div class="text-center">
+          <button class="mt-4 bg-black text-white p-4 rounded-full w-1/2">Sign Up</button>
+        </div>
+      </form>
+      <h2 class="text-center text-xl py-4">Have an account already?</h2>
+      <div class="text-center">
+        <button @click="page = 'login-page'" class="bg-black text-white p-4 rounded-full w-1/2">Log In</button>
+      </div>
+    </section>
+    <!-- Login Section-->
+    <section v-if="page === 'login-page'" class="login-section w-1/2 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="text-center font-medium text-3xl pb-6">Log In</h1>
+      <hr class="mb-14">
+      <form @submit.prevent="eventLoginHandler">
+        <div class="flex my-6">
+          <label for="email" class="inline-block w-2/6 font-bold my-auto">Email</label>
+          <input v-model="login.email" type="email"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="email" name="email"
+            placeholder="Enter your email here" required><br>
+        </div>
+        <div class="flex my-6">
+          <label for="password" class="inline-block w-2/6 font-bold my-auto">Password</label>
+          <input v-model="login.password" type="password"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="password" name="password"
+            placeholder="Enter your password here" required><br>
+        </div>
+        <div class="text-center">
+          <button class="mt-4 bg-black text-white p-4 rounded-full w-1/2">Log In</button>
+        </div>
+      </form>
+      <hr class="mt-10 mb-6">
+      <h2 class="text-center text-lg pb-6">Or sign in with</h2>
+      <img src="https://avatars.githubusercontent.com/u/7328930?v=4" alt="Google-Sign-In-Button"
+        class="h-10 mx-auto hover:border-2 hover:border-black hover:border-solid p-1 hover:rounded-full">
+      <div class="text-center">
+        <h2 class="text-lg pb-6">Don't have an account?</h2>
+        <button @click="page = 'register-page'" class="bg-black text-white p-4 rounded-full w-1/2">Sign Up</button>
+      </div>
+    </section>
+    <!-- Dashboard Section-->
+    <section v-if="page === 'dashboard-page'" class="dashboard-section w-8/12 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="text-center font-medium text-3xl pb-6">Dashboard</h1>
+      <hr class="mb-14 border-black">
+      <div class="flex justify-between">
+        <a class="group relative block h-80 w-80" @click="page = 'menu-page'">
+          <span class="absolute inset-0 border-2 border-dashed border-black"></span>
+
+          <div
+            class="relative flex h-full transform items-end border-2 border-black bg-white transition-transform group-hover:-translate-x-2 group-hover:-translate-y-2">
+            <div class="px-8 pb-8 transition-opacity group-hover:absolute group-hover:opacity-0">
+              <img src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Food" class="h-24 w-24">
+              <h2 class="mt-4 text-2xl font-medium">Total Menu</h2>
+              <h2 class="mt-4 text-2xl font-medium">{{food.length}}</h2>
+            </div>
+
+            <div class="absolute p-8 opacity-0 transition-opacity group-hover:relative group-hover:opacity-100">
+              <h3 class="mt-4 text-2xl font-medium">See all food</h3>
+              <p class="mt-8 font-bold">Click here</p>
+            </div>
+          </div>
+        </a>
+        <a class="group relative block h-80 w-80" @click="page = 'category-page'">
+          <span class="absolute inset-0 border-2 border-dashed border-black"></span>
+
+          <div
+            class="relative flex h-full transform items-end border-2 border-black bg-white transition-transform group-hover:-translate-x-2 group-hover:-translate-y-2">
+            <div class="px-8 pb-8 transition-opacity group-hover:absolute group-hover:opacity-0">
+              <img src="https://cdn-icons-png.flaticon.com/512/561/561123.png" alt="Category" class="h-24 w-24">
+              <h2 class="mt-4 text-2xl font-medium">Total Categories</h2>
+              <h2 class="mt-4 text-2xl font-medium">{{categories.length}}</h2>
+            </div>
+
+            <div class="absolute p-8 opacity-0 transition-opacity group-hover:relative group-hover:opacity-100">
+              <h3 class="mt-4 text-2xl font-medium">See all categories</h3>
+              <p class="mt-8 font-bold">Click here</p>
+            </div>
+          </div>
+        </a>
+        <!-- <div class="flex w-2/5 border-solid border-grey-600 border-2 p-4 flex-col">
+        <p class="font-medium">Total Menu</p>
+        <p id="total-menu" class="font-bold text-5xl">{{food.length}}</p>
+      </div>
+      <div class="flex w-2/5 border-solid border-grey-600 border-2 p-4 flex-col">
+        <p class="font-medium">Total Categories</p>
+        <p id="total-category" class="font-bold text-5xl">{{categories.length}}</p>
+      </div> -->
+      </div>
+    </section>
+    <!-- Menu Section-->
+    <section v-if="page === 'menu-page'" class="menu-section w-11/12 mx-auto shadow-outline p-5 mt-5">
+      <div class="flex justify-between">
+        <h1 class="font-medium text-5xl">Menu</h1>
+        <button @click="page = 'modify-food-page'"
+          class="text-lg hover:font-bold bg-black text-white align px-5 rounded-full">+ New Food</button>
+      </div>
+      <hr class="mb-14 mt-5">
+      <!-- <div class="grid mb-8 rounded-lg shadow-sm dark:border-gray-700 md:mb-15 md:grid-cols-3">
+        <a class="group relative block bg-black z-1" v-for="item in food" :key="item.id">
+          <img alt="Food Menu" :src="item.imgUrl"
+            class="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50" />
+          <div class="relative p-8">
+            <p class="text-sm font-medium uppercase tracking-widest text-pink-500">
+              Food Menu
+            </p>
+            <div class="flex">
+              <p class="text-2xl font-bold text-white">{{item.name}}</p>
+              <img src="./assets/img/edit.png" alt="Edit Button" class="ml-3 w-5 h-5 mr-0 inline-block">
+            </div>
+            <p class="text-2xl font-bold text-white">IDR. {{item.price}}</p>
+            <select name="status" id="status" class="border-2 border-solid border-grey-800 w-35 text-center mt-4">
+              <option value="Active" :selected="item.status === 'Active'"><a>Active</a></option>
+              <option value="Inactive" :selected="item.status === 'Inactive'"><a>Inactive</a></option>
+              <option value="Archived" :selected="item.status === 'Archived'"><a>Archived</a></option>
+            </select>
+            <div class="mt-64">
+              <div
+                class="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                <p class="text-lg text-white">
+                  {{item.description}}
+                </p>
+                <p class="text-sm text-white">
+                  Author: {{item.User.email}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div> -->
+      <table class="w-full">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Name</th>
+          <th>Image</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Author</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr class="border-t-2" v-for="(item, index) in food" :key="item.id">
+          <td class="w-1.5">{{++index}}.</td>
+          <td class="w-20">{{item.name}}</td>
+          <td><img
+              :src="item.imgUrl"
+              alt="Food Pict" class="max-h-56 mx-auto"></td>
+          <td>{{item.description}}</td>
+          <td>Rp. {{item.price}}</td>
+          <td class="text-base">{{item.User.email}}</td>
+          <td>
+            <select name="status" id="status" class="border-2 border-solid border-grey-800 w-35 text-center">
+              <option value="Active" :selected="item.status === 'Active'"><a>Active</a></option>
+              <option value="Inactive" :selected="item.status === 'Inactive'"><a>Inactive</a></option>
+              <option value="Archived" :selected="item.status === 'Archived'"><a>Archived</a></option>
+            </select>
+          </td>
+          <td>
+            <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" alt="Edit Button" class="w-5">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </section>
+    <!-- Category Section-->
+    <section v-if="page === 'category-page'" class="category-section w-11/12 mx-auto shadow-outline p-5 mt-5">
+      <div class="flex justify-between">
+        <h1 class="font-medium text-5xl">Categories</h1>
+        <button @click="page = 'modify-category-page'"
+          class="text-lg hover:font-bold bg-black text-white align px-5 rounded-full">+ New Category</button>
+      </div>
+      <hr class="mb-14 mt-5">
+      <!-- <div class="grid mb-8 rounded-lg shadow-sm dark:border-gray-700 md:mb-15 md:grid-cols-4">
+        <a class="relative block rounded-xl border border-gray-100 p-8 shadow-xl mr-4 mt-4"
+          v-for="category in categories" :key="category.id">
+          <span class="absolute right-4 top-4 px-3 py-1.5">
+            <div class="flex">
+              <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" alt="Edit Button" class="max-h-5">
+              <img src="https://cdn-icons-png.flaticon.com/512/2874/2874821.png" alt="delete-icon" class="max-h-5 ml-2">
+            </div>
+          </span>
+          <div class="mt-8 text-gray-500 sm:pr-8">
+            <img class="h-8 w-8 sm:h-20 sm:w-20 ml-3" src="https://cdn-icons-png.flaticon.com/512/562/562678.png"
+              alt="Dish-Icon">
+            <h3 class="mt-4 text-xl font-bold text-gray-900">{{category.name}}</h3>
+          </div>
+        </a>
+      </div> -->
+      <table class="w-full">
+      <thead>
+        <tr class="h-10">
+          <th>No.</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr class="border-t-2 h-10" v-for="(category, index) in categories" :key="category.id">
+          <td>{{++index}}.</td>
+          <td>{{category.name}}</td>
+          <td class="flex justify-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" alt="Edit Button" class="max-h-6 mx-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/2874/2874821.png" alt="delete-icon" class="max-h-6 mx-4">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </section>
+    <!-- History Section-->
+    <section v-if="page === 'logs-page'" class="history-section w-11/12 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="font-medium text-5xl">Logs</h1>
+      <hr class="mb-14 mt-5">
+      <table class="w-full">
+        <thead>
+          <tr class="h-10">
+            <th>No.</th>
+            <th>Food name</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Updated By</th>
+          </tr>
+        </thead>
+        <tbody class="text-center">
+          <tr class="border-t-2 h-10" v-for="(history, index) in histories" :key="history.id">
+            <td>{{++index}}</td>
+            <td>{{history.name}}</td>
+            <td>{{history.description}}</td>
+            <td>{{history.createdAt}}</td>
+            <td>{{history.updatedBy}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <!-- Modify Food Section-->
+    <section v-if="page === 'modify-food-page'" class="modify-food-section w-3/5 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="text-center font-medium text-3xl pb-7">Modify Food</h1>
+      <hr class="mb-14">
+      <form @submit.prevent="saveFoodHandler">
+        <div class="flex my-4">
+          <label for="modify-food-name" class="inline-block w-2/6 font-bold my-auto">Name</label>
+          <input v-model="addFood.name" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="modify-food-username"
+            name="name" placeholder="Enter food name here" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="modify-food-category" class="inline-block w-2/6 font-bold my-auto">Category</label><br>
+          <select v-model="addFood.categoryId" name="categoryId" id="modify-food-category"
+            class="rounded-lg w-full my-2 p-1.5 border-2 border-grey-600 border-solid pl-3">
+            <option value="0" disabled selected hidden>---Choose---</option>
+            <option v-for="category in categories" :value="category.id" :key="category.id">{{category.name}}</option>
+          </select>
+        </div>
+        <div class="flex my-4">
+          <label for="modify-food-description" class="inline-block w-2/6 font-bold my-auto">Description</label>
+          <input v-model="addFood.description" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="modify-food-description"
+            name="description" placeholder="Enter food description" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="modify-food-price" class="inline-block w-2/6 font-bold my-auto">Price</label>
+          <input v-model="addFood.price" type="number"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="modify-food-price"
+            name="price" placeholder="Enter food price" required><br>
+        </div>
+        <div class="flex my-4">
+          <label for="modify-food-imgUrl" class="inline-block w-2/6 font-bold my-auto">Image</label>
+          <input v-model="addFood.imgUrl" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="modify-food-imgUrl"
+            name="imgUrl" placeholder="Enter food image Url" required><br>
+        </div>
+        <div class="text-center flex justify-between">
+          <button @click="page = 'menu-page'"
+            class="mt-4 bg-white p-4 rounded-full w-2/5 border-2 border-black border-solid"
+            type="button">Cancel</button>
+          <button class="mt-4 bg-black text-white p-4 rounded-full w-2/5">Save</button>
+        </div>
+      </form>
+    </section>
+    <!-- Modify Category Section-->
+    <section v-if="page === 'modify-category-page'"
+      class="modify-category-section w-3/5 mx-auto shadow-outline p-5 mt-5">
+      <h1 class="text-center font-medium text-3xl pb-7">Modify category</h1>
+      <hr class="mb-14">
+      <form @submit.prevent="saveCategoryHandler">
+        <div class="flex my-4">
+          <label for="modify-category-name" class="inline-block w-2/6 font-bold my-auto">Name</label><br>
+          <input v-model="addCategory" type="text"
+            class="rounded-lg w-full p-1.5 border-2 border-grey-600 border-solid pl-3" id="modify-category-username"
+            name="name" placeholder="Enter category name here" required><br>
+        </div>
+        <div class="text-center flex justify-between">
+          <button class="mt-4 bg-white p-4 rounded-full w-2/5 border-2 border-black border-solid"
+            type="button">Cancel</button>
+          <button class="mt-4 bg-black text-white p-4 rounded-full w-2/5">Save</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    const { createApp } = Vue
+    createApp({
+      data() {
+        return {
+          loadStatus: false,
+          baseUrl: "http://localhost:3000/",
+          loggedIn: false,
+          profileBarScrolled: false,
+          page: "login-page",
+          login: {
+            email: '',
+            password: ''
+          },
+          food: [],
+          categories: [],
+          histories: [],
+          register: {
+            username: "",
+            email: "",
+            password: "",
+            phoneNumber: "",
+            address: ""
+          },
+          user: "Guest",
+          addFood: {
+            name: "",
+            categoryId: 0,
+            description: "",
+            imgUrl: "",
+            price: ""
+          },
+          addCategory: "",
+          isLoggedIn: false
+        }
+      },
+      mounted() {
+        this.checkLogInStatus();
+      },
+      methods: {
+        async eventLoginHandler() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: 'POST',
+              url: `${this.baseUrl}login`,
+              data: {
+                email: this.login.email,
+                password: this.login.password
+              }
+            })
+            this.loadStatus = false;
+            localStorage.setItem("access_token", data["200"].access_token);
+            this.login.email = "";
+            this.login.password = "";
+            this.page = "dashboard-page";
+            this.fetchFoodData();
+            this.fetchCategoriesData();
+            this.fetchHistoriesData();
+            this.fetchUserData();
+            this.isLoggedIn = true;
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        checkLogInStatus() {
+          if (localStorage.access_token) {
+            this.page = 'dashboard-page';
+            this.isLoggedIn = true;
+            this.fetchFoodData();
+            this.fetchCategoriesData();
+            this.fetchHistoriesData();
+            this.fetchUserData();
+          }
+          else {
+            this.page = 'login-page';
+          }
+        },
+        async fetchFoodData() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: "GET",
+              url: `${this.baseUrl}food`,
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.food = data;
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async fetchCategoriesData() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: "GET",
+              url: `${this.baseUrl}categories`,
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.categories = data;
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async fetchHistoriesData() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: "GET",
+              url: `${this.baseUrl}histories`,
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.histories = data;
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async fetchUserData() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: "GET",
+              url: `${this.baseUrl}users`,
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.user = data.user;
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async eventRegisterHandler() {
+          try {
+            this.loadStatus = true;
+            const { data } = await axios({
+              method: 'POST',
+              url: `${this.baseUrl}register`,
+              data: {
+                username: this.register.username,
+                email: this.register.email,
+                password: this.register.password,
+                phoneNumber: this.register.phoneNumber,
+                address: this.register.address
+              }
+            })
+            this.loadStatus = false;
+            this.register.username = "";
+            this.register.email = "";
+            this.register.password = "";
+            this.register.phoneNumber = "";
+            this.register.address = "";
+            this.page = "login-page";
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async eventLogoutHandler() {
+          this.loadStatus = true;
+          this.page = 'login-page';
+          this.user = 'Guest';
+          this.profileBarScrolled = false;
+          localStorage.clear();
+          this.loadStatus = false;
+          this.isLoggedIn = false;
+        },
+        async saveFoodHandler() {
+          try {
+            this.loadStatus = true;
+            await axios({
+              method: 'POST',
+              url: `${this.baseUrl}food`,
+              data: {
+                name: this.addFood.name,
+                categoryId: this.addFood.categoryId,
+                description: this.addFood.description,
+                imgUrl: this.addFood.imgUrl,
+                price: this.addFood.price
+              },
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.addFood.name = "";
+            this.addFood.categoryId = "";
+            this.addFood.description = "";
+            this.addFood.imgUrl = "";
+            this.addFood.price = "";
+            this.page = "menu-page";
+            this.fetchFoodData();
+            this.fetchHistoriesData();
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        },
+        async saveCategoryHandler() {
+          try {
+            this.loadStatus = true;
+            await axios({
+              method: 'POST',
+              url: `${this.baseUrl}categories`,
+              data: {
+                name: this.addCategory
+              },
+              headers: {
+                access_token: localStorage.access_token
+              }
+            })
+            this.loadStatus = false;
+            this.addCategory = "";
+            this.page = "category-page";
+            this.fetchCategoriesData();
+          } catch (error) {
+            this.loadStatus = false;
+            console.log(error);
+          }
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+
+</html>
