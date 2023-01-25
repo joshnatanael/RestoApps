@@ -1,0 +1,100 @@
+{
+  "User": [
+    {
+      "username": "mmeneyer0",
+      "email": "psillito0@dailymotion.com",
+      "password": "12345",
+      "role": "Admin",
+      "phoneNumber": "+54 944 902 1215",
+      "address": "2 5th Point"
+    },
+    {
+      "username": "egoslin1",
+      "email": "ifrankes1@tamu.edu",
+      "password": "12345",
+      "role": "Admin",
+      "phoneNumber": "+216 739 559 6804",
+      "address": "5 Jenifer Park"
+    },
+    {
+      "username": "pthunnercliff2",
+      "email": "dserridge2@reddit.com",
+      "password": "12345",
+      "role": "Staff",
+      "phoneNumber": "+81 664 843 6173",
+      "address": "64 Bultman Terrace"
+    },
+    {
+      "username": "cmerrywether3",
+      "email": "pwort3@cnet.com",
+      "password": "12345",
+      "role": "Admin",
+      "phoneNumber": "+1 716 310 7657",
+      "address": "00295 Sloan Crossing"
+    },
+    {
+      "username": "lrosenau4",
+      "email": "jsendley4@microsoft.com",
+      "password": "12345",
+      "role": "Staff",
+      "phoneNumber": "+55 222 394 5310",
+      "address": "5 Huxley Park"
+    }
+  ],
+  "Category": [
+    {
+      "name": "Beef"
+    },
+    {
+      "name": "Chicken"
+    },
+    {
+      "name": "Sandwich"
+    },
+    {
+      "name": "Sushi"
+    }
+  ],
+  "Food": [
+    {
+      "name": "Beef Katsu",
+      "description": "Beef katsu with rice",
+      "price": 82000,
+      "imgUrl": "https://api.vold.io/pictures/5b725cca7b501d1a79414a04/images/d3323a33-f816-4dd1-a67b-5dd6f2b2ae1c.jpg",
+      "authorId": 1,
+      "categoryId": 1
+    },
+    {
+      "name": "Chicken Katsu",
+      "description": "Chicken katsu with rice",
+      "price": 72000,
+      "imgUrl": "https://api.vold.io/pictures/5b725cca7b501d1a79414a04/images/87a632b1-5942-491e-ae21-b128d6d0dc58.jpg",
+      "authorId": 2,
+      "categoryId": 2
+    },
+    {
+      "name": "Sandwich",
+      "description": "Sandwich with katsu",
+      "price": 52000,
+      "imgUrl": "https://api.vold.io/pictures/5b725cca7b501d1a79414a04/images/a431653d-d8c7-4b71-b2ca-cb47b1a50e85.jpg",
+      "authorId": 3,
+      "categoryId": 3
+    },
+    {
+      "name": "Sushi Salmon Roll",
+      "description": "Sushi with salmon roll package",
+      "price": 60000,
+      "imgUrl": "https://api.vold.io/pictures/5b725cca7b501d1a79414a04/images/598bb3b8-e7b3-4351-8bf8-bbf91440d5c7.jpg",
+      "authorId": 4,
+      "categoryId": 4
+    },
+    {
+      "name": "Oyakodon Katsu",
+      "description": "Katsu served with egg and rice",
+      "price": 70000,
+      "imgUrl": "https://api.vold.io/pictures/5b725cca7b501d1a79414a04/images/a9959ffe-1190-47ca-8b1d-369ddd16cb8d.jpg",
+      "authorId": 3,
+      "categoryId": 2
+    }
+  ]
+}
